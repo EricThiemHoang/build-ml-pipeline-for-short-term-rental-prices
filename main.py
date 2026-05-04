@@ -95,7 +95,7 @@ def go(config: DictConfig):
                     "input": "clean_sample.csv:latest",
                     "test_size": config["modeling"]["test_size"],
                     "random_seed": config["modeling"]["random_seed"],
-                    "stratify_by": config["modeling"]["stratify"]
+                    "stratify_by": config["modeling"]["stratify_by"]
                 },
             )
 
@@ -113,7 +113,18 @@ def go(config: DictConfig):
             # Implement here #
             ##################
 
-            pass
+            _ = mlflow.run(os.path.join(hydra.utils.get_original_cwd(), "src", "train_random_forest"),
+                "main",
+                parameters={
+                    "trainval_artifact": "trainval_data.csv:latest",
+                    "val_size": config["modeling"]["val_size"],
+                    "random_seed": config["modeling"]["random_seed"],
+                    "stratify_by": config["modeling"]["stratify_by"],
+                    "rf_config": rf_config,
+                    "max_tfidf_features" : config["modeling"]["max_tfidf_features"],
+                    "output_artifact": "random_forest_model"
+                },
+            )
 
         if "test_regression_model" in active_steps:
 
