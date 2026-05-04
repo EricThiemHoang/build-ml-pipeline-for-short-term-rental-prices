@@ -31,10 +31,9 @@ def go(args):
     df = df.drop_duplicates()
     df = df.dropna(subset=["price"])
 
-
     #   2.  Filtering outlier
-    idx = df['price'].between(args.min_price, args.max_price)
-    
+    df = df[df["price"].between(args.min_price, args.max_price)]
+
     # Add this boundary filter
     idx = df['longitude'].between(-74.25, -73.50) & df['latitude'].between(40.5, 41.2)
 
