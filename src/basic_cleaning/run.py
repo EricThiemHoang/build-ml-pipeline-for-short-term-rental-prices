@@ -23,15 +23,23 @@ def go(args):
     ######################
     # YOUR CODE HERE     #
     ######################
-  #	1. Download the input artifact from W&B
+    #	1. Download the input artifact from W&B
     local_path = wandb.use_artifact("sample.csv:latest").file()
     df = pd.read_csv(local_path)
     
+    # Basic cleaning
+    df = df.drop_duplicates()
+    df = df.dropna(subset=["price"])
+
+
     #   2.  Filtering outlier
-    min_price = args.min_price
-    max_price = args.max_price
-    idx = df['price'].between(min_price, max_price)
+    idx = df['price'].between(args.min_price, args.max_price)
+    
+    # Add this boundary filter
+    idx = df['longitude'].between(-74.25, -73.50) & df['latitude'].between(40.5, 41.2)
+
     df = df[idx].copy()
+    logger.info("Cleaned data has %s rows and %s columns", *df.shape)
 
     #   3. Save the cleaned DataFrame as clean_sample.csv
     df.to_csv("clean_sample.csv", index=False)
